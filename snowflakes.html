@@ -1,0 +1,101 @@
+<html>
+  <head>
+    <style>
+      body {
+        background-color: black;
+      }
+      #text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="snow"></canvas>
+    <canvas id="text"></canvas>
+    <script>
+      var snow = document.getElementById("snow");
+      snow.width = window.innerWidth;
+      snow.height = window.innerHeight;
+      snow.style.zIndex = "1";
+      var ctx = snow.getContext("2d");
+      var w = snow.width;
+      var h = snow.height;
+      var flakes = [];
+
+      function Snowflake(x, y, radius, speed) {
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+        this.speed = speed;
+      }
+
+      Snowflake.prototype.draw = function () {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+        ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+        ctx.shadowColor = "white";
+        ctx.shadowBlur = 20;
+        ctx.fill();
+      };
+
+      Snowflake.prototype.update = function () {
+        this.y += this.speed;
+        if (this.y > h) {
+          this.y = 0;
+        }
+      };
+
+      function createFlakes() {
+        for (var i = 0; i < 100; i++) {
+          var x = Math.floor(Math.random() * w);
+          var y = Math.floor(Math.random() * h);
+          var radius = Math.random() * 3 + 2;
+          var speed = Math.random() * 2 + 1;
+          flakes.push(new Snowflake(x, y, radius, speed));
+        }
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, w, h);
+        for (var i = 0; i < flakes.length; i++) {
+          flakes[i].draw();
+          flakes[i].update();
+        }
+        requestAnimationFrame(animate);
+      }
+
+      createFlakes();
+      animate();
+
+      var text = document.getElementById("text");
+      text.style.zIndex = "2";
+
+      var tctx = text.getContext("2d");
+
+      tctx.font = "80px Arial";
+      tctx.textAlign = "center";
+      tctx.fillStyle = "white";
+
+      var glow = 0;
+      var glowDirection = 0.05;
+
+      function draw() {
+        tctx.clearRect(0, 0, text.width, text.height);
+        tctx.shadowColor = "white";
+        tctx.shadowBlur = glow;
+        tctx.fillText("Ali", text.width / 2, text.height / 2);
+        glow += glowDirection;
+        if (glow > 10 || glow < 0) {
+          glowDirection = -glowDirection;
+        }
+        requestAnimationFrame(draw);
+      }
+
+      draw();
+    </script>
+  </body>
+</html>
